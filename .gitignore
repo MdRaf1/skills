@@ -1,0 +1,13 @@
+# Private project state and credentials
+/.scratch/
+/data/session-recovery/
+.env
+.env.*
+!.env.example
+/.claude/settings.local.json
+
+# Local caches and operating-system files
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

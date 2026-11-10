@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "projectRoot": null,
+  "updatedAt": null,
+  "status": "idle",
+  "task": null,
+  "handover": ".scratch/continuation-handover.md",
+  "authoritativePaths": [],
+  "outstandingRequests": [],
+  "completed": [],
+  "nextUnit": null,
+  "inFlight": [],
+  "pendingMutations": [],
+  "blockers": [],
+  "activeWorkers": [],
+  "restrictions": []
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Continue Work"
+  short_description: "Resume verified work from a local checkpoint"
+
+policy:
+  allow_implicit_invocation: false
