@@ -16,54 +16,58 @@ Get ready-to-upload packages from **[Releases](https://github.com/MdRaf1/skills/
 | Continue Work | [ZIP](https://github.com/MdRaf1/skills/releases/latest/download/continue-work.zip) · [.skill](https://github.com/MdRaf1/skills/releases/latest/download/continue-work.skill) |
 | Reuse Scout | [ZIP](https://github.com/MdRaf1/skills/releases/latest/download/reuse-scout.zip) · [.skill](https://github.com/MdRaf1/skills/releases/latest/download/reuse-scout.skill) |
 
-A [combined plugin ZIP](https://github.com/MdRaf1/skills/releases/latest/download/skills-plugin.zip) is also available for compatible plugin installers. Each `.skill` file contains the same ZIP bytes as its matching `.zip`.
+The [combined plugin ZIP](https://github.com/MdRaf1/skills/releases/latest/download/skills-plugin.zip) remains available as an optional download. Each `.skill` file contains the same ZIP bytes as its matching `.zip`.
 
 ## Install
 
-### Claude web
+**Let your AI handle the setup.** Open the project where you want the skill in Claude Code, Codex, Cursor, or another agent that can edit project files. Paste **one** of these prompts.
 
-1. Download the skill's **ZIP** above.
-2. Open **Customize → Skills → + → Create skill → Upload a skill**.
-3. Upload and enable it, then ask Claude to use the skill.
+### Install Reuse Scout
 
-Skill uploads depend on your account's available features and file-creation capability.
+```text
+Install only reuse-scout from:
+https://github.com/MdRaf1/skills/tree/main/skills/reuse-scout
 
-### CLI and IDE tools
-
-Clone the source:
-
-```sh
-git clone https://github.com/MdRaf1/skills.git
+Read the repository's installation guide and the skill first. Copy the whole
+skill folder into this AI tool's project-level skills directory. Ask if the
+host or target project is unclear. Preserve supporting files and ask before
+replacing existing files. Do not install another skill, change global settings,
+or run reuse-scout. Stop after installation and tell me how to invoke it.
 ```
 
-Copy the whole `skills/<name>/` folder into your working project's directory below. `<name>` is `reuse-scout` or `continue-work`. Check before replacing an existing copy.
+### Install Continue Work
 
-| Tool | Destination | Use it |
-|---|---|---|
-| Claude Code | `.claude/skills/<name>/` | `/reuse-scout` or `/continue-work` |
-| Codex | `.agents/skills/<name>/` | `$reuse-scout` or `$continue-work` |
-| Cursor | `.cursor/skills/<name>/` | Select the skill from `/` |
-| VS Code Copilot, local agent | `.github/skills/<name>/` | Select the skill from `/` |
-| Gemini CLI | `.gemini/skills/<name>/` | Ask it to activate the named skill |
-| OpenCode | `.opencode/skills/<name>/` | Ask it to load the named skill |
+```text
+Install only continue-work from:
+https://github.com/MdRaf1/skills/tree/main/skills/continue-work
 
-Restart the tool if the skill does not appear. For personal installs, other clients, and plugin setup, see the [full installation guide](docs/INSTALLATION.md).
+Read the repository's installation guide and the skill first. Copy the whole
+skill folder into this AI tool's project-level skills directory. Ask if the
+host or target project is unclear. If checkpointing is not configured, follow
+its references/SETUP.md for this project. Preserve existing rules and state;
+ask before replacing anything. Do not install another skill, change global
+settings, or resume any task. Verify the setup and tell me how to invoke it.
+```
 
-### ChatGPT, Gemini, and other web chats
+If the agent cannot fetch GitHub, give it the downloaded folder for the **chosen skill**. These prompts do not install anything into a web account or give a chat access to your computer.
 
-If native skill installation is unavailable, upload or paste the skill's **`SKILL.md`** and say:
+### Web apps or manual installation
 
-> Use these instructions for this task: [describe your task]. Tell me what information or tools you are missing.
-
-This is instruction-based use, not a native installation. It does not give the chat access to your computer or add tools. ChatGPT's native web route uses plugin-bundled skills; see the [guide](docs/INSTALLATION.md#web-and-desktop-tools) for the distinction.
+- **Claude web:** download the chosen skill's ZIP, then open **Customize → Skills → + → Create skill → Upload a skill**. Upload and enable it. Availability depends on your account and file-creation capability.
+- **ChatGPT, Gemini, or other web chats:** if native installation is unavailable, upload or paste that skill's `SKILL.md` and ask the AI to use it for your task. This is instruction-based use, not a native installation.
+- **Manual CLI/IDE setup:** copy just the chosen skill folder into your tool's skills directory. See the [installation paths and web compatibility guide](docs/INSTALLATION.md).
 
 ## Use
 
-**Reuse Scout:** after loading it, ask:
+- **Claude Code:** `/reuse-scout` or `/continue-work`.
+- **Codex:** `$reuse-scout` or `$continue-work`.
+- **Other tools:** use the invocation instructions reported during setup or in the [guide](docs/INSTALLATION.md).
+
+After loading **Reuse Scout**, ask:
 
 > Find the best existing foundations for a self-hosted notes app. Compare coverage, maintenance, license, and effort. Don't write code yet.
 
-**Continue Work:** first follow its [one-time checkpoint setup](skills/continue-work/references/SETUP.md). Before ending a session, ask the agent to save the current task, completed work, and exact next step. In a fresh session, invoke the skill to check the saved state and continue.
+For **Continue Work**, finish the [one-time checkpoint setup](skills/continue-work/references/SETUP.md) if it was not done during installation. Before ending a session, ask the agent to save the current task, completed work, and exact next step. In a fresh session, invoke the skill to check the saved state and continue.
 
 Continue Work needs saved evidence—it cannot recover work that was never recorded. For web use, attach the checkpoint, handover, and relevant files. Keep credentials out of those files, and verify uncertain sends or deployments before retrying.
 

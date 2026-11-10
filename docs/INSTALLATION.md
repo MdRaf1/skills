@@ -37,20 +37,16 @@ Cloning a catalog does not register its skills with every AI tool. Installing in
 
 Restart the agent if discovery has not refreshed. Gemini CLI also documents `/skills reload`. Do not assume `/skills` and `/name` have the same meaning in every client.
 
-### Let an agent copy the files
+### Let an agent install one skill
 
-Open your actual working project, replace the placeholders below, and give the agent this request:
+Open the project where you want the skill and paste its individual setup prompt from the README:
 
-```text
-Install continue-work and reuse-scout from <CATALOG_ROOT>/skills into
-<DESTINATION_SKILLS_DIRECTORY> for this project.
+- [Install Reuse Scout with AI](../README.md#install-reuse-scout)
+- [Install Continue Work with AI](../README.md#install-continue-work)
 
-Read the source and existing project instructions first. Copy both whole skill
-folders. Preserve their supporting files. If a destination exists, show the
-difference and ask before replacing it. Do not change global settings,
-credentials, permissions, unrelated files, or checkpoints. Do not run the
-skills, commit, or push. Report what was installed and how to select it.
-```
+Each prompt installs **only the selected skill**, preserves existing files, and stops before running a task. The Continue Work prompt also handles missing checkpoint setup. Neither prompt installs the other skill or changes global settings.
+
+If the agent cannot fetch GitHub, provide the downloaded folder for that one skill. An agent without filesystem access cannot perform a project installation; use the web instructions below instead.
 
 ### Automatic versus explicit selection
 
@@ -90,7 +86,7 @@ OpenAI's documentation distinguishes:
 
 This catalog supplies [`plugin.json`](../plugin.json), root `skills/`, and a [combined plugin ZIP](https://github.com/MdRaf1/skills/releases/latest/download/skills-plugin.zip). The portable format discovers skills from the root `skills/` directory; this instruction-only plugin does not need an app or MCP server.
 
-Use a plugin installation/distribution workflow supported by your account or organization. Once its skills are available, type `@` to select one. This repository has not been published to a vendor plugin directory.
+The combined archive is an optional download, not part of the individual-skill setup in this guide. This repository has not been published to a vendor plugin directory. If a skill is already available in your ChatGPT account, type `@` to select it.
 
 A universal standalone-ZIP upload button in ChatGPT web, or automatic installation from a GitHub link, is not established here. A prepared package is not proof that an account can import it directly. See the official [plugin packaging](https://developers.openai.com/plugins/build/plugins) and [skills](https://developers.openai.com/codex/skills/) documentation for your environment.
 
