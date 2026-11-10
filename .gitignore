@@ -6,6 +6,9 @@
 !.env.example
 /.claude/settings.local.json
 
+# Generated archives are published as GitHub Release assets
+/dist/
+
 # Local caches and operating-system files
 __pycache__/
 *.pyc
