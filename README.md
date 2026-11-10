@@ -25,28 +25,17 @@ The [combined plugin ZIP](https://github.com/MdRaf1/skills/releases/latest/downl
 ### Install Reuse Scout
 
 ```text
-Install only reuse-scout from:
-https://github.com/MdRaf1/skills/tree/main/skills/reuse-scout
+Install only reuse-scout from: https://github.com/MdRaf1/skills/tree/main/skills/reuse-scout
 
-Read the repository's installation guide and the skill first. Copy the whole
-skill folder into this AI tool's project-level skills directory. Ask if the
-host or target project is unclear. Preserve supporting files and ask before
-replacing existing files. Do not install another skill, change global settings,
-or run reuse-scout. Stop after installation and tell me how to invoke it.
+Read the repository's installation guide and the skill first. Copy the whole skill folder into this AI tool's project-level skills directory. Ask if the host or target project is unclear. Preserve supporting files and ask before replacing existing files. Do not install another skill, change global settings, or run reuse-scout. Stop after installation and tell me how to invoke it.
 ```
 
 ### Install Continue Work
 
 ```text
-Install only continue-work from:
-https://github.com/MdRaf1/skills/tree/main/skills/continue-work
+Install only continue-work from: https://github.com/MdRaf1/skills/tree/main/skills/continue-work
 
-Read the repository's installation guide and the skill first. Copy the whole
-skill folder into this AI tool's project-level skills directory. Ask if the
-host or target project is unclear. If checkpointing is not configured, follow
-its references/SETUP.md for this project. Preserve existing rules and state;
-ask before replacing anything. Do not install another skill, change global
-settings, or resume any task. Verify the setup and tell me how to invoke it.
+Read the repository's installation guide and the skill first. Copy the whole skill folder into this AI tool's project-level skills directory. Ask if the host or target project is unclear. If checkpointing is not configured, follow its references/SETUP.md for this project. Preserve existing rules and state; ask before replacing anything. Do not install another skill, change global settings, or resume any task. Verify the setup and tell me how to invoke it.
 ```
 
 If the agent cannot fetch GitHub, give it the downloaded folder for the **chosen skill**. These prompts do not install anything into a web account or give a chat access to your computer.
