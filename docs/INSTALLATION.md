@@ -12,6 +12,7 @@ git clone https://github.com/MdRaf1/skills.git
 
 | Format | Use |
 |---|---|
+| Claude Code plugin marketplace | Install either skill as a plugin from inside Claude Code. See [Claude Code plugin marketplace](#claude-code-plugin-marketplace). |
 | `skills/<name>/` folder | Native installation in a CLI or IDE agent. Copy the whole folder, including supporting resources such as `scripts/`. |
 | `<name>.zip` | Upload to a host that accepts a skill ZIP, such as Claude.ai. |
 | `<name>.skill` | The same ZIP bytes with a different extension. Use it only when your host accepts that filename type. |
@@ -19,6 +20,24 @@ git clone https://github.com/MdRaf1/skills.git
 | `SKILL.md` text | Upload/paste as instructions when native skill installation is unavailable. Supply referenced files separately when needed. |
 
 Cloning a catalog does not register its skills with every AI tool. Installing instructions does not install browsing tools, grant repository access, or carry permissions between sessions.
+
+## Claude Code plugin marketplace
+
+[`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json) makes this repository a Claude Code plugin marketplace named `mdraf1-skills`. It lists two plugins, `continue-work` and `reuse-scout`, each exposing exactly one skill from the root `skills/` directory.
+
+```text
+/plugin marketplace add MdRaf1/skills
+/plugin install continue-work@mdraf1-skills
+/plugin install reuse-scout@mdraf1-skills
+```
+
+Claude Code 2.1.275 and later also accepts the one-step form `/plugin install <name> --marketplace MdRaf1/skills`. The same commands work in a terminal as `claude plugin marketplace add MdRaf1/skills` and `claude plugin install <name>@mdraf1-skills`.
+
+- **Invocation.** Plugin skills are namespaced: `/continue-work:continue-work` and `/reuse-scout:reuse-scout`. The plain `/continue-work` form belongs to a copied skill folder (next section). Avoid installing the same skill both ways.
+- **Updates.** `/plugin marketplace update mdraf1-skills`, then `/plugin update <name>@mdraf1-skills`. Both plugins take their version from the root [`plugin.json`](../plugin.json), so an update is offered only after that version is raised.
+- **Scope.** A plugin install copies the repository into Claude Code's plugin cache; it does not add files to your project. Continue Work's optional checkpoint rules still need the one-time project setup in its [setup guide](../skills/continue-work/references/SETUP.md).
+
+This marketplace is specific to Claude Code. Other hosts use the folders and archives described below.
 
 ## CLI and IDE installation
 
@@ -165,6 +184,8 @@ Upload these generated files as GitHub Release assets:
 - `continue-work.zip` and `continue-work.skill`
 - `reuse-scout.zip` and `reuse-scout.skill`
 - `skills-plugin.zip`
+
+The Claude Code marketplace needs no build step: it serves the source folders straight from the repository. When adding, renaming, or removing a skill, update `.claude-plugin/marketplace.json` as well as the builder's allowlist; `tests/test_marketplace.py` fails if the marketplace and `skills/` disagree. Raise `version` in `plugin.json` with every release, otherwise installed plugins are not offered the update.
 
 Keep the source folders in Git and archives in [Releases](https://github.com/MdRaf1/skills/releases). Do not commit newly generated archives. Earlier commits may still contain the original binaries; moving current downloads to Releases does not rewrite repository history.
 
