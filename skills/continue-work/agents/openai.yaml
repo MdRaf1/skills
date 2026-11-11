@@ -1,6 +1,6 @@
 interface:
   display_name: "Continue Work"
-  short_description: "Resume verified work from a local checkpoint"
+  short_description: "Continue a dead session from its transcript and checkpoint"
 
 policy:
   allow_implicit_invocation: false

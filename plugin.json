@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mdraf1-skills",
-  "version": "1.0.0",
-  "description": "Continue interrupted work from saved evidence and scout reusable foundations before building."
+  "version": "2.0.0",
+  "description": "Continue a dead session from its transcript and checkpoint, and scout reusable foundations before building."
 }

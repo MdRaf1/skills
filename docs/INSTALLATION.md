@@ -1,6 +1,6 @@
 # Installation and usage guide
 
-Start with the [README](../README.md) for the short version. This page covers personal installs, web/plugin differences, checkpoint setup, and maintaining release packages.
+Start with the [README](../README.md) for the short version. This page covers personal installs, web/plugin differences, session recovery, and maintaining release packages.
 
 ## Choose a format
 
@@ -12,7 +12,7 @@ git clone https://github.com/MdRaf1/skills.git
 
 | Format | Use |
 |---|---|
-| `skills/<name>/` folder | Native installation in a CLI or IDE agent. Copy the whole folder, including supporting resources. |
+| `skills/<name>/` folder | Native installation in a CLI or IDE agent. Copy the whole folder, including supporting resources such as `scripts/`. |
 | `<name>.zip` | Upload to a host that accepts a skill ZIP, such as Claude.ai. |
 | `<name>.skill` | The same ZIP bytes with a different extension. Use it only when your host accepts that filename type. |
 | `skills-plugin.zip` | Both skills packaged with a portable root `plugin.json`, for compatible plugin installation/distribution workflows. |
@@ -44,16 +44,17 @@ Open the project where you want the skill and paste its individual setup prompt 
 - [Install Reuse Scout with AI](../README.md#install-reuse-scout)
 - [Install Continue Work with AI](../README.md#install-continue-work)
 
-Each prompt installs **only the selected skill**, preserves existing files, and stops before running a task. The Continue Work prompt also handles missing checkpoint setup. Neither prompt installs the other skill or changes global settings.
+Each prompt installs **only the selected skill**, preserves existing files, and stops before running a task. The Continue Work prompt also checks that the bundled transcript reader runs. Neither prompt installs the other skill or changes global settings.
 
 If the agent cannot fetch GitHub, provide the downloaded folder for that one skill. An agent without filesystem access cannot perform a project installation; use the web instructions below instead.
 
 ### Automatic versus explicit selection
 
-- Codex's bundled `continue-work/agents/openai.yaml` disables implicit invocation. Explicitly select the recovery skill.
+- Codex's bundled `continue-work/agents/openai.yaml` disables implicit invocation. Explicitly select the recovery skill with `$continue-work`.
+- In Claude Code, Continue Work can also be selected from its description when you ask to continue or resume earlier work. Its frontmatter pre-approves one command, the bundled read-only transcript reader, through `allowed-tools`; every other action still goes through your normal permission prompts.
 - `reuse-scout` can be discovered through its description in hosts that support automatic selection. It produces a report and stops before implementation.
 - Claude Code, Cursor, the VS Code local harness, and current OpenCode document `disable-model-invocation: true`. Add that field to the YAML frontmatter of an **installed copy** if you want an additional manual-only guard. Preserve `name` and `description`; keep generic web-upload packages unchanged.
-- Regardless of discovery behavior, Continue Work requires an explicit resume or inspection request. Loading a skill does not authorize external actions.
+- Regardless of discovery behavior, Continue Work acts only on a request to continue, resume, inspect, or hand off earlier work. Loading a skill does not authorize external actions.
 - Keep normal permission and consent prompts enabled. These skills do not require blanket approval flags.
 
 ### Other clients and remote workspaces
@@ -110,33 +111,22 @@ changes. Do not claim that a chat attachment was saved into my repository.
 
 Supply referenced files separately when needed. An AI being able to read instructions does not give it tools or persistent project storage.
 
-- **Continue Work:** attach the checkpoint, handover, and relevant redacted files or outputs. Without live project access, expect a snapshot-based review. Save proposed updated state into the real project yourself when the host cannot do that.
+- **Continue Work:** a web chat cannot read session transcripts on your computer. Attach the checkpoint, handover, a saved digest, and relevant redacted files or outputs. Expect a snapshot-based review. Save proposed updated state into the real project yourself when the host cannot do that.
 - **Reuse Scout:** enable available search/browsing or supply sources. Missing search access must be reported as a limitation, not fabricated current findings or a claim that nothing exists.
 
-## Continue Work: setup and recovery
+## Continue Work: recovery, checkpoints, and moving
 
-Follow the bundled [checkpoint setup guide](../skills/continue-work/references/SETUP.md). Install the skill in your agent, but create state in the **project whose work you want to continue**, not automatically in this catalog.
+Full details are in the bundled [setup and daily-use guide](../skills/continue-work/references/SETUP.md).
 
-The setup guide includes templates and a standing instruction snippet. Put those rules somewhere the host actually loads; an unread sidecar does not maintain checkpoints.
+**After a failure.** Open a new session in the same project folder, without `--resume` or `--continue`, and invoke the skill: `/continue-work` in Claude Code, `$continue-work` in Codex. Nothing else is supplied. Add `inspect` to see what would be resumed before any work happens, `list` to see the sessions found, or a session id to choose one.
 
-Before ending a session, ask:
+**What it reads.** The bundled `scripts/session_digest.py` reads the transcripts Claude Code and Codex already keep (`~/.claude/projects/`, `~/.codex/sessions/`; `CLAUDE_CONFIG_DIR` and `CODEX_HOME` are honoured) and prints a bounded digest of the previous session, or of several consecutive sessions when the latest one was only a short retry. The digest is printed in parts, because agent tools cut long output short. It needs Python 3 and the standard library. It reads and prints; it has no option that writes, deletes, or sends anything. The agent then compares the digest with the working tree and any checkpoint before continuing.
 
-```text
-Checkpoint the current work and stop. Save all outstanding requests, verified
-completed work, the exact next step, restrictions, in-flight attempts, pending
-writes, blockers, worker state, and actual test results. Do no further work.
-```
+**Checkpoints.** A checkpoint is an optional, agent-maintained record in the project (`.scratch/continuation.json` plus a handover). On one machine the transcript is enough. A checkpoint adds what a transcript only implies, such as the exact next step and uncertain outcomes, and it is what survives a move. The setup guide has the one-time request that enables it and the standing instruction snippet. Put those rules somewhere the host loads: Codex and OpenCode read `AGENTS.md`; Claude Code 2.1.277 and later reads `AGENTS.md` when the project has no `CLAUDE.md`, and otherwise needs an `@AGENTS.md` line in `CLAUDE.md`.
 
-In a fresh session, explicitly select Continue Work and ask for an inspection first:
+**Moving to another machine or tool.** Transcripts stay where they were written. Run `/continue-work handoff` first: it updates the checkpoint and handover and saves a digest under `.scratch/session-digests/`. Carry the project across with `.scratch/` included, privately, then run `/continue-work` there.
 
-```text
-Inspect the checkpoint and relevant evidence only. Do not resume the task or
-change files. Report the task, remaining requests, next step, and uncertainty.
-```
-
-If that matches where you stopped, explicitly ask it to continue.
-
-This lightweight version has no automatic prompt/tool receipt logger, transcript importer, session-ID lookup, or concurrent-writer coordination. It does not fix a gateway or recover unsaved reasoning. Keep one active checkpoint writer at a time. Verify uncertain sends, pushes, deployments, migrations, and submissions before any repeat attempt.
+**Limits.** Recovery gets close to the old conversation, not identical. Reasoning the old session never recorded, unsaved editor or browser state, and tool permissions are not recovered. Uncertain sends, pushes, deployments, migrations, and submissions are verified before any repeat attempt. The reader parses Claude Code and Codex transcripts; other tools fall back to the checkpoint and files, or to a transcript passed with `--file`. Credentials in digests are masked on a best-effort basis only. Nothing here repairs a gateway.
 
 ## Reuse Scout: example tasks
 
@@ -160,14 +150,15 @@ The skill recommends Adopt, Extend, Compose, Reference, or Build only the remain
 
 ## Build and publish packages
 
-The skills need no Python runtime. Maintainers use Python 3's standard library:
+Reuse Scout needs no runtime. Continue Work's transcript reader needs Python 3 on the machine where the agent runs. Maintainers use Python 3's standard library:
 
 ```text
+python -m unittest discover -s tests
 python -I scripts/package_skills.py
 python -I scripts/package_skills.py --check
 ```
 
-Use `python3` if that is your platform's Python 3 command. The builder generates five archives in the **ignored local `dist/` directory**. `--check` verifies existing packages without rewriting them; on a fresh clone, build first.
+Use `python3` if that is your platform's Python 3 command. The first line runs the transcript reader's tests, which use synthetic transcripts only. The builder generates five archives in the **ignored local `dist/` directory**. `--check` verifies existing packages without rewriting them; on a fresh clone, build first.
 
 Upload these generated files as GitHub Release assets:
 
@@ -177,19 +168,20 @@ Upload these generated files as GitHub Release assets:
 
 Keep the source folders in Git and archives in [Releases](https://github.com/MdRaf1/skills/releases). Do not commit newly generated archives. Earlier commits may still contain the original binaries; moving current downloads to Releases does not rewrite repository history.
 
-The builder checks resource allowlists, rejects symlinks/unexpected resources, checks basic metadata and the uninitialized checkpoint, and verifies archive content against source. ZIP and `.skill` pairs must be identical. These are package checks, not tests of installation or execution in every destination product.
+The builder checks resource allowlists, rejects symlinks/unexpected resources, checks basic metadata and the uninitialized checkpoint, and verifies archive content against source. ZIP and `.skill` pairs must be identical. Archive entries are stored without the executable bit, so the reader is always run through the interpreter (`python3 .../session_digest.py`). These are package checks, not tests of installation or execution in every destination product.
 
 ## Privacy and attribution
 
-Do not add live checkpoints, conversations, credentials, or application records to this catalog. Git ignores are not encryption or access controls. A public skills repository does not make your private working project accessible to an AI tool.
+Do not add live checkpoints, session digests, conversations, credentials, or application records to this catalog. Git ignores are not encryption or access controls. A public skills repository does not make your private working project accessible to an AI tool.
 
 Reuse Scout preserves the supplied instructions and their attribution to ECC's MIT-licensed `search-first` skill. See the [third-party notice](../skills/reuse-scout/THIRD_PARTY_NOTICES.md) and [upstream license](../skills/reuse-scout/LICENSE.upstream.txt). That upstream notice does not assign a blanket license to every addition in this collection.
 
-Installation details were checked against official documentation on **2026-11-10**. Product versions, account eligibility, organizational policies, and available tools can change. Check Gemini CLI's current eligibility/availability notes for your account.
+Installation details were checked against official documentation on **2026-11-10**; Claude Code skill frontmatter, placeholders, and `AGENTS.md` loading were rechecked on **2026-11-11**. The transcript reader was checked against transcripts written by Claude Code 2.1.322 and Codex CLI 0.167; both formats are undocumented and can change. Product versions, account eligibility, organizational policies, and available tools can change. Check Gemini CLI's current eligibility/availability notes for your account.
 
 ## Official documentation
 
 - [Claude Code skills](https://code.claude.com/docs/en/skills)
+- [Claude Code project instructions and `AGENTS.md`](https://code.claude.com/docs/en/memory)
 - [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
 - [Codex and ChatGPT skills](https://developers.openai.com/codex/skills/)
 - [Portable plugin packaging](https://developers.openai.com/plugins/build/plugins)

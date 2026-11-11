@@ -1,3 +1,4 @@
 # Private, machine-local continuation state
 /.scratch/continuation.json
 /.scratch/continuation-handover.md
+/.scratch/session-digests/

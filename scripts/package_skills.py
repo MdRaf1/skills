@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build or verify deterministic, instruction-only skill/plugin ZIP packages.
+"""Build or verify deterministic skill/plugin ZIP packages.
 
 No third-party Python packages, network requests, skill execution, or extraction.
 Only the explicit resource allowlists below can enter a package.
@@ -21,6 +21,7 @@ RESOURCES = {
         "SKILL.md",
         "agents/openai.yaml",
         "references/SETUP.md",
+        "scripts/session_digest.py",
         "snippets/AGENTS.md",
         "snippets/gitignore.txt",
         "templates/continuation.json",
@@ -49,6 +50,8 @@ def read_sources() -> dict[str, dict[str, bytes]]:
             raise ValueError(f"Skill folder is a symlink: {name}")
         actual = set()
         for item in folder.rglob("*"):
+            if "__pycache__" in item.parts:
+                continue  # interpreter cache, never packaged
             if item.is_symlink():
                 raise ValueError(f"Symlink refused: {item.relative_to(ROOT)}")
             if item.is_file():
@@ -72,7 +75,7 @@ def read_sources() -> dict[str, dict[str, bytes]]:
         if fields.get("name") != name or not fields.get("description"):
             raise ValueError(f"Invalid name/description metadata in {name}")
         if any(len(data) > 2_000_000 for data in contents.values()):
-            raise ValueError(f"Unexpectedly large instruction resource in {name}")
+            raise ValueError(f"Unexpectedly large resource in {name}")
         result[name] = contents
     checkpoint = json.loads(result["continue-work"]["templates/continuation.json"])
     if checkpoint["status"] != "idle" or checkpoint["projectRoot"] is not None:
