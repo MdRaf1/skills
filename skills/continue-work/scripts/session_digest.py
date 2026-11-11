@@ -34,6 +34,8 @@ DEFAULT_BUDGET = 66_000
 # digest is printed in parts that each fit comfortably.
 PART_SIZE = 22_000
 END_MARK = "[End of digest]"
+# File readers clip very long lines (Claude Code's at 2,000 characters), so a saved digest stays below that.
+LINE_LIMIT = 1600
 SIGNIFICANT = ("assistant", "tool", "error", "abort")
 CURRENT_ID_ENV = ("CLAUDE_CODE_SESSION_ID", "CLAUDE_SESSION_ID", "CODEX_THREAD_ID", "CODEX_SESSION_ID")
 # Codex wrappers whose effects are already recorded as CommandExecution/FileChange items.
@@ -210,6 +212,24 @@ def _clip(text: str, limit: int, pointer: str = "") -> str:
 def _quote(text: str, indent: str = "") -> str:
     """Blockquote verbatim text so its own headings and rules cannot be mistaken for the digest's."""
     return "\n".join(f"{indent}> {line}".rstrip() for line in (text or "").splitlines()) or f"{indent}>"
+
+
+def _wrap(text: str) -> str:
+    """Break over-long lines at a space, keeping the quote prefix, so that no reader clips them."""
+    out = []
+    for line in text.splitlines():
+        if len(line) <= LINE_LIMIT:
+            out.append(line)
+            continue
+        prefix = re.match(r"\s*(?:> )?", line).group(0)
+        lead = prefix if prefix.strip() else "  "
+        while len(line) > LINE_LIMIT:
+            cut = line.rfind(" ", LINE_LIMIT // 2, LINE_LIMIT)
+            cut = cut if cut > len(lead) else LINE_LIMIT
+            out.append(line[:cut])
+            line = lead + line[cut:].lstrip(" ")
+        out.append(line)
+    return "\n".join(out) + "\n"
 
 
 def _short_ts(ts) -> str:
@@ -1154,7 +1174,7 @@ def render_digest(session: Session, budget: int = DEFAULT_BUDGET, redact_output:
     if tail and len(tail) < len(events):
         out.append(f"_{len(events) - len(tail)} earlier events not shown here._")
     out += tail or ["No events."]
-    text = "\n".join(out) + "\n"
+    text = _wrap("\n".join(out))
     return redact(text) if redact_output else text
 
 
@@ -1196,7 +1216,7 @@ def render_recovery(chain, budget: int = DEFAULT_BUDGET, redact_output: bool = T
                          f"{_short_ts(_iso(ref.last_activity))} UTC, {len(ref.prompts())} prompts, {ref.work()} agent "
                          f"messages and tool calls. First prompt: \"{_head(_squash(first.text), 200)}\"")
         parts.append("\n".join(lines) + "\n")
-    text = "\n---\n\n".join(parts)
+    text = _wrap("\n---\n\n".join(parts))
     return redact(text) if redact_output else text
 
 

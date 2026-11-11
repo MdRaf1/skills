@@ -617,6 +617,19 @@ class DigestTests(TempDirCase):
         for fragment in ("-X POST", "git tag v1.2.0", "git -C sub push origin main"):
             self.assertIn(fragment, risky)
 
+    def test_no_line_is_too_long_for_a_file_reader_and_wrapping_loses_no_words(self):
+        prompt = " ".join(f"word{n}" for n in range(1500))  # one line of about 11,000 characters
+        digest = sd.render_digest(self.session([
+            cc_user(prompt, "2026-01-02T10:00:00Z"),
+            cc_tool_use("Bash", {"command": "echo " + "x" * 5000}, "c1", "2026-01-02T10:00:01Z"),
+            cc_tool_result("c1", "r" * 5000, "2026-01-02T10:00:02Z"),
+            cc_text("Done. " + "sentence here. " * 400, "2026-01-02T10:00:03Z"),
+        ]))
+        self.assertLessEqual(max(len(line) for line in digest.splitlines()), 1600)
+        section = digest.split("## User prompts", 1)[1].split("\n## ", 1)[0]
+        quoted = " ".join(line.lstrip("> ") for line in section.splitlines() if line.startswith(">"))
+        self.assertIn(prompt, " ".join(quoted.split()))
+
     def test_last_todo_list_is_shown(self):
         digest = sd.render_digest(self.session([
             cc_user("plan and do", "2026-01-02T10:00:00Z"),

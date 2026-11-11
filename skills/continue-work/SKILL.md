@@ -40,7 +40,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/session_digest.py digest
 - When the digest clips something you need (an exact command, a decision, a path), read it in full with `show --event N` or find it with `search REGEX`.
 - Exit code 2 means no transcript was found. Continue with the other two sources and say so.
 
-**Checkpoint.** Read `.scratch/continuation.json`, the handover it names, and anything in `.scratch/session-digests/` (or the location this project defines). Compare its `updatedAt` with the digest's last record: where they disagree, the older one is stale. If `projectRoot` is not the current root, the project was moved or cloned; resolve saved paths against the current root and do not follow old absolute paths out of the project.
+**Checkpoint.** Read `.scratch/continuation.json`, the handover it names, and the newest digest in `.scratch/session-digests/` (or the location this project defines). Older saved digests are background: open one only when you need it. Compare its `updatedAt` with the digest's last record: where they disagree, the older one is stale. If `projectRoot` is not the current root, the project was moved or cloned; resolve saved paths against the current root and do not follow old absolute paths out of the project.
 
 **Real state.** `git status`, recent commits and diffs in every repository involved (nested ones too), the files the digest lists as written, processes the old session started, and the remote side of anything pushed, published or deployed.
 
