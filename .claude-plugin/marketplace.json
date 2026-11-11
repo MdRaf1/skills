@@ -1,0 +1,34 @@
+{
+  "name": "mdraf1-skills",
+  "owner": {
+    "name": "MdRaf1",
+    "url": "https://github.com/MdRaf1"
+  },
+  "metadata": {
+    "description": "Skills for AI coding assistants: continue a dead session from its transcript, and scout reusable foundations before building."
+  },
+  "plugins": [
+    {
+      "name": "continue-work",
+      "description": "Continue a dead session in a fresh one. Reads the old session's transcript from disk, checks it against the files and any checkpoint, and carries on without you restating anything.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/continue-work"],
+      "category": "productivity",
+      "keywords": ["session", "resume", "recovery", "handoff"],
+      "homepage": "https://github.com/MdRaf1/skills",
+      "repository": "https://github.com/MdRaf1/skills"
+    },
+    {
+      "name": "reuse-scout",
+      "description": "Before building, search GitHub, registries and the web for existing foundations. Returns the closest bases to fork or extend, plus the gaps that still need custom work.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/reuse-scout"],
+      "category": "productivity",
+      "keywords": ["research", "reuse", "dependencies", "search"],
+      "homepage": "https://github.com/MdRaf1/skills",
+      "repository": "https://github.com/MdRaf1/skills"
+    }
+  ]
+}

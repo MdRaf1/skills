@@ -47,7 +47,26 @@ The [combined plugin ZIP](https://github.com/MdRaf1/skills/releases/latest/downl
 
 ## Install
 
-### Continue Work for every project (Claude Code)
+### Claude Code plugin marketplace
+
+This repository is a Claude Code plugin marketplace. Each skill is its own plugin, so you install only what you want. Inside Claude Code:
+
+```text
+/plugin marketplace add MdRaf1/skills
+/plugin install continue-work@mdraf1-skills
+/plugin install reuse-scout@mdraf1-skills
+```
+
+On Claude Code 2.1.275 or later, one line adds the marketplace and installs a plugin:
+
+```text
+/plugin install continue-work --marketplace MdRaf1/skills
+/plugin install reuse-scout --marketplace MdRaf1/skills
+```
+
+Skills installed as plugins are namespaced by plugin name: type `/continue-work:continue-work` or `/reuse-scout:reuse-scout`. Arguments work the same way, for example `/continue-work:continue-work list`. Run `/plugin marketplace update mdraf1-skills` to pick up new releases.
+
+### Continue Work for every project (Claude Code, manual copy)
 
 ```text
 git clone https://github.com/MdRaf1/skills.git
@@ -89,7 +108,7 @@ A web chat cannot read session transcripts on your computer. There, Continue Wor
 
 ## Use
 
-- **Claude Code:** `/reuse-scout` or `/continue-work`.
+- **Claude Code:** `/reuse-scout` or `/continue-work` for a copied skill folder; `/reuse-scout:reuse-scout` or `/continue-work:continue-work` for a marketplace plugin install.
 - **Codex:** `$reuse-scout` or `$continue-work`.
 - **Other tools:** use the invocation instructions reported during setup or in the [guide](docs/INSTALLATION.md).
 
